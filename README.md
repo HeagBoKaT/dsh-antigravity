@@ -1,98 +1,88 @@
 # dsh-antigravity
 
-适用于 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）的 Google Antigravity / Cloud Code Assist 模型提供商插件。
+<p align="center">
+  <img src="./assets/images/chat-model-picker.png" alt="dsh-antigravity" width="100%" />
+</p>
 
-**本仓库是基于 [LiZhenNet/dsh-antigravity](https://github.com/LiZhenNet/dsh-antigravity)（`v0.0.4`，commit `9495776`）的兼容适配分支**，仅对原代码做了最小改动，使其能在当前 DSH Desktop Beta 内置的 `@deepseek-ai/dsh-llm` 版本上正常加载。
+English | [简体中文](./README.zh.md)
 
-> 非官方集成。本项目与 Google 无关，亦未获得 Google 认可。请仅在您有权访问的账号和服务中使用。
+Google Antigravity / Cloud Code Assist model provider plugin crafted for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH).
 
-## 为什么需要这个分支
+Access Google Cloud Code Assist's robust suite of coding models directly through Google OAuth with no API key required, featuring large context windows and advanced reasoning.
 
-上游 `dsh-antigravity@0.0.4` 从 `@deepseek-ai/dsh-llm` 具名导入 `CallId`，而 DSH Desktop Beta 内置的 `@deepseek-ai/dsh-llm@0.1.2-rc.1` **没有导出 `CallId`**（该版本中工具调用 id 的品牌函数名为 `ToolCallId`）。ESM 具名导入在链接期即校验导出是否存在，缺失会直接抛错并导致整棵插件树加载失败：
+---
 
-```
-SyntaxError: The requested module '@deepseek-ai/dsh-llm' does not provide an export named 'CallId'
-    at file:///C:/Users/.../.dsh/profiles/desktop/node_modules/dsh-antigravity/lib/index.js:15
-```
+## ✨ Features
 
-详情见下方“改动内容”。上游若在后续版本改用 `CallId` 命名（npm 上较新的 `dsh-llm` alpha 版本已调整），此差异即可消除。
+- **Day-One Gemini 3.8 Flash Support**: Full native support for Google's latest `gemini-3.8-flash-tiered` with 1M context window and configurable thinking levels (Low / Medium / High / Off).
+- **Accurate Quota Detection & Zero Fake 404s**:
+  - Distinguishes Google 429 `RESOURCE_EXHAUSTED` responses and displays friendly reset countdowns;
+  - Stripped invalid sandbox endpoint fallbacks, preventing confusing "model not found (404)" false alarms when quotas are hit.
+- **Modernized DSH-Native UI**:
+  - Seamless dark and light theme adaptability following DSH theme tokens;
+  - Distinct live quota bars for Gemini (Emerald) and Claude & GPT (Violet/Cyan);
+  - Filter tabs (All, Gemini, Claude & GPT, Enabled) plus one-click curated preset reset.
+- **Clean Model Catalog**: Purged internal, deprecated, and broken test variants (such as 3.1-flash-image), presenting only verified flagship models.
+- **Dual-ID Compatibility**: Registers both `dsh-antigravity` and `@wisexin/dsh-antigravity` to ensure 100% activation success across marketplace, GitHub, and local tarball installations.
 
-## 改动内容（与上游的差异）
+---
 
-与上游 commit `9495776` 相比，本分支**仅**将 `CallId` 替换为语义等价的 `ToolCallId`，共 3 处，全部位于 `lib/index.js`：
+## 🚀 Installation
 
-1. 具名导入：
+### Option 1: DSH Marketplace
+Search `antigravity` in the DSH Plugin Marketplace and click Install.
 
-   ```diff
-    CONTEXT_WINDOW_EXCEEDED_CODE,
-   -CallId,
-    EMPTY_RESPONSE_CODE,
-   +ToolCallId,
-   ```
-
-2. 工具调用 block：
-
-   ```diff
-   -const block = { type: "tool-call", id: CallId(toolId), name: toolName, arguments: argsText };
-   +const block = { type: "tool-call", id: ToolCallId(toolId), name: toolName, arguments: argsText };
-   ```
-
-3. `tool-call-delta`：
-
-   ```diff
-   -        id: CallId(toolId),
-   +        id: ToolCallId(toolId),
-   ```
-
-其余逻辑、模型列表、OAuth 流程、设置页 i18n 等均与上游保持一致。
-
-## 使用方式
-
-### 在 dsh 市场中搜索 / 安装
-
-本仓库已在 GitHub 上公开并添加 `dsh-plugin` 等 topic，可被 DSH 的社区插件市场（如 `dsh-marketplace`，基于 GitHub `topic:dsh-plugin` 动态发现）收录。市场收录有最长约 10 分钟的目录缓存，之后在 **设置 → 插件 → Marketplace** 中搜索 **Antigravity** 即可找到。
-
-也可以直接用命令行安装到指定 profile：
-
+### Option 2: From GitHub
 ```sh
-dsh plugin --profile desktop add github:WiseXin/dsh-antigravity
 dsh plugin --profile web add github:WiseXin/dsh-antigravity
 ```
 
-### DSH Desktop（以 profile 依赖方式安装）
-
-在 `~/.dsh/profiles/desktop/package.json` 中将依赖指向本仓库：
-
-```json
-"dependencies": {
-  "@wisexin/dsh-antigravity": "github:WiseXin/dsh-antigravity"
-}
+### Option 3: From Local Tarball
+```sh
+npm run pack:dist
+dsh plugin --profile web add ./dist/wisexin-dsh-antigravity-0.1.2.tgz
 ```
 
-重新安装依赖后完全退出并重启 DSH Desktop。
-
-### 手动替换插件目录（临时覆盖）
-
-将 `lib/`、`bin/`、`assets/`、`cordis.patch.yml`、`package.json` 等复制到：
-
-```text
-~/.dsh/profiles/desktop/node_modules/@wisexin/dsh-antigravity/
+Restart DSH:
+```sh
+dsh web
 ```
 
-完全退出（含托盘）并重启 DSH Desktop。
+---
 
-> 说明：DSH Desktop 内置的 `dsh-llm` 版本由应用安装包决定，profile 目录无法覆盖；
-> 因此直接替换插件目录（而非其依赖）即可让本分支生效。任何一次插件重装 / `pnpm install` 都会恢复成依赖声明中的版本。
+## 🔑 Authentication
 
-## 完整使用说明
+1. Open **Settings > Antigravity** in DSH;
+2. Click **Sign in with Google** to complete standard browser OAuth;
+3. Once signed in, live quota pools and reset countdowns will display automatically:
+   - **Gemini Models Pool**: Shared among Gemini 3.8 Flash, 3.7 Flash, 3.1 Pro, etc.
+   - **Claude & GPT Models Pool**: Independent pool for Claude Opus 4.6, Claude Sonnet 4.6, and GPT-OSS 120B.
+4. Select **Antigravity** in your chat model picker and start coding.
 
-插件的安装、Google OAuth 登录、模型与配额说明见：
+---
 
-- 中文：[`README.zh.md`](./README.zh.md)
-- 英文：[`README.md`](./README.md)（上游原始英文说明，本文件已替换为仓库说明，可查看上游仓库）
+## 📋 Model Catalog
 
-上游仓库：<https://github.com/LiZhenNet/dsh-antigravity>
+| Model ID | Display Name | Provider | Features | Default |
+|---|---|---|---|---|
+| `gemini-3.8-flash` | Gemini 3.8 Flash | Google | 💭 Thinking · 🖼️ Vision · 1M Context | **Enabled** |
+| `gemini-3.7-flash` | Gemini 3.7 Flash | Google | 💭 Thinking · 🖼️ Vision · 1M Context | **Enabled** |
+| `gemini-3.1-pro` | Gemini 3.1 Pro | Google | 🧠 Deep Reasoning · 🖼️ Vision · 1M Context | **Enabled** |
+| `claude-sonnet-4-6` | Claude Sonnet 4.6 | Anthropic | 💭 Thinking · 🖼️ Vision · 200k Context | **Enabled** |
+| `claude-opus-4-6` | Claude Opus 4.6 | Anthropic | 🏆 Flagship Large · 🖼️ Vision · 250k Context | **Enabled** |
+| `gemini-3.6-flash` | Gemini 3.6 Flash | Google | ⚡ Efficient · 🖼️ Vision | Optional |
+| `gemini-3.5-flash` | Gemini 3.5 Flash | Google | ⚡ Responsive · 🖼️ Vision | Optional |
+| `gemini-3-flash` | Gemini 3 Flash | Google | ⚡ Fast Reasoning · 🖼️ Vision | Optional |
+| `gemini-2.5-pro` | Gemini 2.5 Pro | Google | 🧠 Classic Pro · 🖼️ Vision | Optional |
+| `gpt-oss-120b` | GPT-OSS 120B | OpenAI | Open Weight Model · 131k Context | Optional |
 
-## 许可证
+---
 
-[MIT](./LICENSE)。上游版权归 `dsh-antigravity contributors` 所有；本分支保留原许可证与版权声明，仅做兼容性适配。
+## ⚖️ Disclaimers & Acknowledgments
+
+- **Disclaimer**: Unofficial community integration. Not affiliated with or endorsed by Google, Anthropic, or OpenAI.
+- **Acknowledgment**: Derived and enhanced from the open-source community project [LiZhenNet/dsh-antigravity](https://github.com/LiZhenNet/dsh-antigravity).
+
+## 📄 License
+
+[MIT License](./LICENSE)

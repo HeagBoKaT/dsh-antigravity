@@ -1,6 +1,6 @@
 {
   "name": "@wisexin/dsh-antigravity",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Google Antigravity / Cloud Code Assist model provider for DeepSeek Harness (DSH Desktop Beta Compatible)",
   "type": "module",
   "main": "lib/index.js",
@@ -36,7 +36,7 @@
   },
   "scripts": {
     "check": "node scripts/verify.mjs && node --check lib/index.js && node --check lib/client.js && node --check bin/antigravity-login.mjs",
-    "pack:dist": "mkdir -p dist && npm pack --pack-destination dist",
+    "pack:dist": "mkdir -p dist && npm pack --cache /tmp/npm-cache --pack-destination dist",
     "prepack": "node scripts/verify.mjs"
   },
   "engines": {
