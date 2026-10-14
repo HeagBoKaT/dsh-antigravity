@@ -14,15 +14,19 @@
 
 ## ✨ 核心特性
 
-- **首发原生支持 Gemini 3.8 Flash**：完整适配 Google 最新一代 `gemini-3.8-flash-tiered`，100 万超大上下文，支持思维链推理强度（Thinking Level）自由调节。
-- **精准配额感知与防误报机制**：
-  - 智能识别 Google 429 `RESOURCE_EXHAUSTED` 配额耗尽，直接展示精准倒计时；
-  - 移除了无效沙箱端点回退，彻底根除“配额耗尽却提示模型不存在 (404)”的伪报错。
+- **首发原生支持 Gemini 3.8 Flash**：完整适配 Google 最新一代 `gemini-3.8-flash-tiered`，100 万超大上下文，直发对应运行时模型，支持思维链推理等级（Low / Medium / High）自由调节，默认保留轻度思考。
+- **智能端点容灾与 429 自动故障转移（Auto-Failover）**：
+  - 智能多级端点切换：针对 Google Cloud Code Assist 主端点限流，自动启用并首选 sandbox 备用端点，保障高可用；
+  - 完善的 429 容灾链条：单端点限流后自动尝试后备端点，杜绝提前放弃，彻底杜绝伪报错；
+  - 智能识别 Google 429 `RESOURCE_EXHAUSTED` 配额耗尽，直接展示精准重置倒计时。
+- **高可靠凭据持久化与多账号管理**：
+  - 修复 OAuth Token 刷新落盘时的顶层与账号多层字段同步问题，杜绝 Token 回滚与 401 刷新循环；
+  - 支持多账号多凭据无缝轮询与配额切换。
 - **全新现代化 UI 交互**：
   - 完美融入 DSH 原生主题系统，支持深色（Dark Mode）与浅色模式无缝自适应；
   - 翡翠绿（Gemini）与科技紫青（Claude/GPT）双池独立实时额度看板；
-  - 新增「全部 / Gemini / Claude & GPT / 已启用」分类过滤 Tabs 与「仅保留推荐」一键重置。
-- **纯净旗舰模型库**：剔除所有内部调试、测试及已下线的冗余变体（如 3.1-flash-image 等），保留最核心的可用旗舰。
+  - 新增「全部 / Gemini / Claude & GPT / 已启用」分类过滤 Tabs。
+- **纯净旗舰模型库**：剔除所有内部调试、测试及过旧的模型变体，聚焦精选 5 大主流旗舰模型。
 - **双模块标识无缝兼容**：同时注册 `dsh-antigravity` 与 `@wisexin/dsh-antigravity`，无论在 DSH 插件市场一键安装、GitHub 安装还是离线安装，均能 100% 顺滑激活，杜绝加载失败。
 
 ---
@@ -40,7 +44,7 @@ dsh plugin --profile web add github:WiseXin/dsh-antigravity
 ### 方式三：通过本地 Release 包安装
 ```sh
 npm run pack:dist
-dsh plugin --profile web add ./dist/wisexin-dsh-antigravity-0.1.2.tgz
+dsh plugin --profile web add ./dist/wisexin-dsh-antigravity-0.1.3.tgz
 ```
 
 ### 方式四：手动复制部署
@@ -76,16 +80,13 @@ dsh web
 
 | 模型 ID | 模型全称 | 厂商 | 特性 | 默认状态 |
 |---|---|---|---|---|
-| `gemini-3.8-flash` | Gemini 3.8 Flash | Google | 💭 思考链 · 🖼️ 多模态 · 1M 上下文 | **默认启用** |
-| `gemini-3.7-flash` | Gemini 3.7 Flash | Google | 💭 思考链 · 🖼️ 多模态 · 1M 上下文 | **默认启用** |
-| `gemini-3.1-pro` | Gemini 3.1 Pro | Google | 🧠 复杂推理 · 🖼️ 多模态 · 1M 上下文 | **默认启用** |
-| `claude-sonnet-4-6` | Claude Sonnet 4.6 | Anthropic | 💭 深度思考 · 🖼️ 多模态 · 200k 上下文 | **默认启用** |
-| `claude-opus-4-6` | Claude Opus 4.6 | Anthropic | 🏆 旗舰超大模型 · 🖼️ 多模态 · 250k 上下文 | **默认启用** |
-| `gemini-3.6-flash` | Gemini 3.6 Flash | Google | ⚡ 均衡高效 · 🖼️ 多模态 | 可选启用 |
-| `gemini-3.5-flash` | Gemini 3.5 Flash | Google | ⚡ 快速响应 · 🖼️ 多模态 | 可选启用 |
-| `gemini-3-flash` | Gemini 3 Flash | Google | ⚡ 高速推理 · 🖼️ 多模态 | 可选启用 |
-| `gemini-2.5-pro` | Gemini 2.5 Pro | Google | 🧠 经典 Pro 模型 · 🖼️ 多模态 | 可选启用 |
-| `gpt-oss-120b` | GPT-OSS 120B | OpenAI | 开放权重大模型 · 131k 上下文 | 可选启用 |
+| `gemini-3.8-flash` | Gemini 3.8 Flash | Google | 🧠 思考链（Low/Med/High） · 👁️ 多模态 · 1M 上下文 | **默认启用** |
+| `gemini-3.7-flash` | Gemini 3.7 Flash | Google | 🧠 思考链（Low/Med/High） · 👁️ 多模态 · 1M 上下文 | **默认启用** |
+| `claude-sonnet-4-6` | Claude Sonnet 4.6 | Anthropic | 🧠 深度思考 · 👁️ 多模态 · 200k 上下文 | **默认启用** |
+| `claude-opus-4-6` | Claude Opus 4.6 | Anthropic | 🧠 旗舰超大模型 · 👁️ 多模态 · 250k 上下文 | **默认启用** |
+| `gpt-oss-120b` | GPT-OSS 120B | OpenAI | 开放权重大模型 · 131k 上下文 | **默认启用** |
+
+> 注：3.7 系列模型因 Google 上游 sandbox 端点特性，若遇 404/429 建议首选 `gemini-3.8-flash` 作为日常主力。
 
 ---
 
