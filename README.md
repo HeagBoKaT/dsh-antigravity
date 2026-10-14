@@ -16,8 +16,8 @@ Access Google Cloud Code Assist's robust suite of coding models directly through
 
 - **Day-One Gemini 3.8 Flash Support**: Full native support for Google's latest `gemini-3.8-flash-tiered` with 1M context window, direct model targeting, and configurable thinking levels (Low / Medium / High), defaulting to helpful low-level reasoning.
 - **Intelligent Endpoint Auto-Failover & 429 Resilience**:
-  - Multi-tier endpoint failover: Automatically promotes healthy sandbox endpoints when primary Google Cloud Code Assist endpoints are throttled, maximizing uptime.
-  - Seamless 429 recovery: Progresses through fallback endpoints upon 429 rate limits without prematurely aborting valid fallback streams.
+  - **Sandbox Promoted as Primary Endpoint**: By default, `daily-cloudcode-pa.sandbox.googleapis.com` is prioritized as the primary endpoint (zero extra round-trip latency, immune to account-wide throttles), while the original standard endpoint acts as a reliable fallback.
+  - Seamless 429 recovery: Progresses through fallback endpoints upon 429 rate limits without prematurely aborting valid streams.
   - Accurate Google 429 `RESOURCE_EXHAUSTED` quota detection with friendly live reset countdowns.
 - **Robust Multi-Account Credentials & Quota Persistence**:
   - Resolved OAuth token refresh deserialization sync flaws to prevent token rollback and 401 loops.

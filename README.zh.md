@@ -16,8 +16,8 @@
 
 - **首发原生支持 Gemini 3.8 Flash**：完整适配 Google 最新一代 `gemini-3.8-flash-tiered`，100 万超大上下文，直发对应运行时模型，支持思维链推理等级（Low / Medium / High）自由调节，默认保留轻度思考。
 - **智能端点容灾与 429 自动故障转移（Auto-Failover）**：
-  - 智能多级端点切换：针对 Google Cloud Code Assist 主端点限流，自动启用并首选 sandbox 备用端点，保障高可用；
-  - 完善的 429 容灾链条：单端点限流后自动尝试后备端点，杜绝提前放弃，彻底杜绝伪报错；
+  - **默认首选 Sandbox 高可用端点**：默认将稳定免限流的 `daily-cloudcode-pa.sandbox.googleapis.com` 提升为主端点（一次命中，零额外时延），原默认端点作为二级兜底；
+  - 完善的 429 容灾链条：若首选端点遇限流，自动顺延尝试下一端点，杜绝提前放弃或伪报错；
   - 智能识别 Google 429 `RESOURCE_EXHAUSTED` 配额耗尽，直接展示精准重置倒计时。
 - **高可靠凭据持久化与多账号管理**：
   - 修复 OAuth Token 刷新落盘时的顶层与账号多层字段同步问题，杜绝 Token 回滚与 401 刷新循环；
