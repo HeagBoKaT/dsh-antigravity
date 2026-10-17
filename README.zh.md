@@ -44,7 +44,7 @@ dsh plugin --profile web add github:WiseXin/dsh-antigravity
 ### 方式三：通过本地 Release 包安装
 ```sh
 npm run pack:dist
-dsh plugin --profile web add ./dist/wisexin-dsh-antigravity-0.1.3.tgz
+dsh plugin --profile web add ./dist/wisexin-dsh-antigravity-0.1.12.tgz
 ```
 
 ### 方式四：手动复制部署

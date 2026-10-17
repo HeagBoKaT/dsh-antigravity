@@ -44,7 +44,7 @@ dsh plugin --profile web add github:WiseXin/dsh-antigravity
 ### Option 3: From Local Tarball
 ```sh
 npm run pack:dist
-dsh plugin --profile web add ./dist/wisexin-dsh-antigravity-0.1.3.tgz
+dsh plugin --profile web add ./dist/wisexin-dsh-antigravity-0.1.12.tgz
 ```
 
 Restart DSH:
