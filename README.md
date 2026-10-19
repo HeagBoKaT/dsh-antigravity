@@ -16,9 +16,12 @@ Access Google Cloud Code Assist's robust suite of coding models directly through
 
 - **Day-One Gemini 3.8 Flash Support**: Full native support for Google's latest `gemini-3.8-flash-tiered` with 1M context window, direct model targeting, and configurable thinking levels (Low / Medium / High), defaulting to helpful low-level reasoning.
 - **Intelligent Endpoint Auto-Failover & 429 Resilience**:
-  - **Sandbox Promoted as Primary Endpoint**: By default, `daily-cloudcode-pa.sandbox.googleapis.com` is prioritized as the primary endpoint (zero extra round-trip latency, immune to account-wide throttles), while the original standard endpoint acts as a reliable fallback.
-  - Seamless 429 recovery: Progresses through fallback endpoints upon 429 rate limits without prematurely aborting valid streams.
-  - Accurate Google 429 `RESOURCE_EXHAUSTED` quota detection with friendly live reset countdowns.
+  - **Three-Tier Endpoint Chain (Daily → Sandbox → PROD)**: `daily-cloudcode-pa.googleapis.com` (the official IDE native primary endpoint) is now the default first choice with zero extra round-trip latency, followed by the `daily-cloudcode-pa.sandbox.googleapis.com` sandbox, and the legacy `cloudcode-pa.googleapis.com` as last-resort fallback. Pin a single endpoint with `ANTIGRAVITY_BASE_URL`.
+  - **Accurate 429 Classification**: Only responses that genuinely indicate exhausted account quota (`RESOURCE_EXHAUSTED` quota wording) surface a live reset countdown. Endpoint-level rate limiting is handled by backoff and endpoint progression instead of being misreported as "quota exhausted".
+  - **Upstream Timeout Guard**: A 45-second upstream timeout ships by default (tunable via `ANTIGRAVITY_UPSTREAM_TIMEOUT_MS`). When Google lacks capacity it may hold the connection open instead of returning an error, which otherwise leaves requests loading forever.
+- **Live Model Catalog Filtering**: While listing models, availability is probed in parallel across endpoints via `fetchAvailableModels`, pruning whole families Google has retired (3.7 series currently returns 404 upstream) so broken models never appear in the picker. If probing itself fails (e.g. rate limited), the full catalog is preserved rather than silently shrinking; results cache for 5 minutes.
+- **Repaired Fallback Chain**: Since the 3.7 / 3.6 series has been retired upstream, their fallback target now resolves to the verified `gemini-3-flash` instead of another non-existent model, and non-quota 429s no longer abort the remaining candidates.
+- **Official-Client Wire Fingerprint**: Request headers match the official Antigravity client fingerprint format (pinned to the current stable official version, with `os_type` / `arch` mapped from the runtime), request envelopes use the upstream key order plus a dynamic `requestId`, and `requestType` is injected only when tools are present.
 - **Robust Multi-Account Credentials & Quota Persistence**:
   - Resolved OAuth token refresh deserialization sync flaws to prevent token rollback and 401 loops.
   - Supports multi-account rotation and real-time quota tracking.
@@ -63,6 +66,11 @@ dsh web
    - **Claude & GPT Models Pool**: Independent pool for Claude Opus 4.6, Claude Sonnet 4.6, and GPT-OSS 120B.
 4. Select **Antigravity** in your chat model picker and start coding.
 
+> On headless servers where the browser cannot be launched automatically, run the CLI login helper on the same machine:
+> ```sh
+> node "$DSH_HOME/profiles/web/node_modules/dsh-antigravity/bin/antigravity-login.mjs"
+> ```
+
 ---
 
 ## 📋 Model Catalog
@@ -75,7 +83,7 @@ dsh web
 | `claude-opus-4-6` | Claude Opus 4.6 | Anthropic | 🧠 Flagship Large · 👁️ Vision · 250k Context | **Enabled** |
 | `gpt-oss-120b` | GPT-OSS 120B | OpenAI | Open Weight Model · 131k Context | **Enabled** |
 
-> Note: Due to upstream sandbox endpoint capabilities, if you experience 404/429 with 3.7 models, `gemini-3.8-flash` is strongly recommended as the daily driver.
+> Note: Google's model supply changes over time. Retired models are hidden from the catalog automatically, and requests targeting them fall back to a verified model in the same family — no manual switching required.
 
 ---
 
