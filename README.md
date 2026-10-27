@@ -4,11 +4,27 @@
   <img src="./assets/images/chat-model-picker.png" alt="dsh-antigravity" width="100%" />
 </p>
 
-English | [简体中文](./README.zh.md)
+English | [Русский](./README.ru.md) | [简体中文](./README.zh.md)
 
 Google Antigravity / Cloud Code Assist model provider plugin crafted for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH).
 
 Access Google Cloud Code Assist's robust suite of coding models directly through Google OAuth with no API key required, featuring large context windows and advanced reasoning.
+
+> **This is a fork** of [WiseXin/dsh-antigravity](https://github.com/WiseXin/dsh-antigravity) that adds outbound proxy support. See [What's changed in this fork](#-whats-changed-in-this-fork).
+
+---
+
+## 🆕 What's Changed in This Fork
+
+Compared to upstream [`WiseXin/dsh-antigravity@6e04394`](https://github.com/WiseXin/dsh-antigravity/commit/6e04394):
+
+- **HTTP / HTTPS / SOCKS5 proxy support** for every request to Google: OAuth token exchange, quota, model discovery and chat streaming. See [Proxy](#-proxy-http--https--socks5).
+  - `http://` and `https://` proxies via `CONNECT` tunnel, `socks5://` (local DNS) and `socks5h://` (proxy-side DNS), with optional `user:pass@` authentication.
+  - Zero new dependencies: implemented on top of Node's built-in `net` / `tls` / `http` in [`lib/proxy.js`](./lib/proxy.js); with no proxy configured the native `fetch` is used unchanged.
+  - Resolution order: `ANTIGRAVITY_PROXY` env → Settings UI → `HTTPS_PROXY` / `HTTP_PROXY` / `ALL_PROXY` (with `NO_PROXY`). `direct` forces a direct connection.
+- **New "Network Proxy" card** in **Settings > Antigravity** (EN / ZH strings), backed by a new `GET/POST /antigravity/api/proxy` endpoint. The value is stored in `antigravity-settings.json` and applied without restart.
+- **CLI login helper** (`antigravity-login`) also honours the saved proxy.
+- **Russian README** (this file's [Русский](./README.ru.md) version).
 
 ---
 
@@ -37,12 +53,16 @@ Access Google Cloud Code Assist's robust suite of coding models directly through
 ## 📦 Installation
 
 ### Option 1: DSH Marketplace
-Search `antigravity` in the DSH Plugin Marketplace and click Install.
+Search `antigravity` in the DSH Plugin Marketplace and click Install. This installs the upstream version, without proxy support.
 
 ### Option 2: From GitHub
 ```sh
+# this fork (with proxy support)
+dsh plugin --profile web add github:HeagBoKaT/dsh-antigravity
+# upstream
 dsh plugin --profile web add github:WiseXin/dsh-antigravity
 ```
+Use `--profile desktop` for DSH Desktop.
 
 ### Option 3: From Local Tarball
 ```sh
@@ -96,6 +116,11 @@ Use the value `direct` at levels 1 or 2 to force a direct connection even when s
 
 ```sh
 ANTIGRAVITY_PROXY=socks5h://127.0.0.1:1080 dsh web
+```
+
+PowerShell:
+```powershell
+$env:ANTIGRAVITY_PROXY = "socks5h://127.0.0.1:1080"; dsh web
 ```
 
 ---

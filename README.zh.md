@@ -4,7 +4,9 @@
   <img src="./assets/images/chat-model-picker.png" alt="dsh-antigravity" width="100%" />
 </p>
 
-[English](./README.md) | 简体中文
+[English](./README.md) | [Русский](./README.ru.md) | 简体中文
+
+> **本仓库是 [WiseXin/dsh-antigravity](https://github.com/WiseXin/dsh-antigravity) 的分支（fork）**，新增 HTTP / HTTPS / SOCKS5 代理支持，详见下方「网络代理」章节及 [English README 的变更说明](./README.md#-whats-changed-in-this-fork)。
 
 专为 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH) 打造的 Google Antigravity / Cloud Code Assist 旗舰模型提供商插件。
 
