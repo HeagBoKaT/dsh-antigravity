@@ -22,7 +22,8 @@ Compared to upstream [`WiseXin/dsh-antigravity@6e04394`](https://github.com/Wise
   - `http://` and `https://` proxies via `CONNECT` tunnel, `socks5://` (local DNS) and `socks5h://` (proxy-side DNS), with optional `user:pass@` authentication.
   - Zero new dependencies: implemented on top of Node's built-in `net` / `tls` / `http` in [`lib/proxy.js`](./lib/proxy.js); with no proxy configured the native `fetch` is used unchanged.
   - Resolution order: `ANTIGRAVITY_PROXY` env → Settings UI → `HTTPS_PROXY` / `HTTP_PROXY` / `ALL_PROXY` (with `NO_PROXY`). `direct` forces a direct connection.
-- **New "Network Proxy" card** in **Settings > Antigravity** (EN / ZH strings), backed by a new `GET/POST /antigravity/api/proxy` endpoint. The value is stored in `antigravity-settings.json` and applied without restart.
+- **Russian UI and a language switcher**: the settings page is available in English, Russian and Chinese. A 🌐 selector in the page header picks Auto / English / Русский / 简体中文 (stored per browser). Auto follows the DSH language, and since DSH has no Russian UI, a Russian system language switches the plugin to Russian. Quota groups, bucket names, descriptions and reset countdowns are now localized too (upstream always showed them in Chinese).
+- **New "Network Proxy" card** in **Settings > Antigravity**, backed by a new `GET/POST /antigravity/api/proxy` endpoint. The value is stored in `antigravity-settings.json` and applied without restart.
 - **CLI login helper** (`antigravity-login`) also honours the saved proxy.
 - **Russian README** (this file's [Русский](./README.ru.md) version).
 
