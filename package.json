@@ -35,7 +35,7 @@
     "antigravity-login": "bin/antigravity-login.mjs"
   },
   "scripts": {
-    "check": "node scripts/verify.mjs && node --check lib/index.js && node --check lib/client.js && node --check bin/antigravity-login.mjs",
+    "check": "node scripts/verify.mjs && node --check lib/index.js && node --check lib/client.js && node --check bin/antigravity-login.mjs && node --check lib/proxy.js",
     "pack:dist": "mkdir -p dist && npm pack --cache /tmp/npm-cache --pack-destination dist",
     "prepack": "node scripts/verify.mjs"
   },

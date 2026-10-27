@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import {
   FileCredentialStore,
+  FileModelSettingsStore,
   credentialPath,
+  loadConfiguredProxy,
   loginAndSave,
   terminalInteraction,
 } from "../lib/index.js";
@@ -23,6 +25,7 @@ try {
     console.log(`Removed Antigravity credentials from ${store.path()}`);
     process.exit(0);
   }
+  await loadConfiguredProxy(new FileModelSettingsStore());
   const credentials = await loginAndSave(store, terminalInteraction(controller.signal));
   const suffix = credentials.email ? ` for ${credentials.email}` : "";
   console.log(`Antigravity login complete${suffix}.`);

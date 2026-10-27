@@ -79,6 +79,33 @@ dsh web
 
 ---
 
+## 🌐 网络代理（HTTP / HTTPS / SOCKS5）
+
+所有发往 Google 的请求（OAuth 换取 Token、配额、模型发现与对话流）都可以经由代理转发，无需额外依赖。
+
+| 协议 | 行为 |
+|---|---|
+| `http://host:port` | HTTP `CONNECT` 隧道 |
+| `https://host:port` | 通过 TLS 连接代理后建立 `CONNECT` 隧道 |
+| `socks5://host:port` | SOCKS5，目标域名在本地解析 |
+| `socks5h://host:port`（或 `socks://`） | SOCKS5，目标域名由代理解析 |
+
+所有协议均支持认证：`socks5h://user:pass@127.0.0.1:1080`（特殊字符需 URL 编码，如 `@` → `%40`）。
+
+代理按以下优先级选取（第一个非空值生效）：
+
+1. 环境变量 `ANTIGRAVITY_PROXY`；
+2. **设置 > Antigravity > 网络代理**（保存到 `antigravity-settings.json`，即时生效）；
+3. `HTTPS_PROXY` / `HTTP_PROXY` / `ALL_PROXY`（大小写均可），遵循 `NO_PROXY`。
+
+在第 1、2 级填写 `direct` 可在存在系统代理变量时强制直连。
+
+```sh
+ANTIGRAVITY_PROXY=socks5h://127.0.0.1:1080 dsh web
+```
+
+---
+
 ## 📋 精选模型清单
 
 | 模型 ID | 模型全称 | 厂商 | 特性 | 默认状态 |

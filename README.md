@@ -73,6 +73,33 @@ dsh web
 
 ---
 
+## 🌐 Proxy (HTTP / HTTPS / SOCKS5)
+
+All outbound requests to Google (OAuth token exchange, quota, model discovery and chat streaming) can be routed through a proxy. No extra dependencies are needed.
+
+| Scheme | Behaviour |
+|---|---|
+| `http://host:port` | HTTP `CONNECT` tunnel |
+| `https://host:port` | HTTP `CONNECT` tunnel over TLS to the proxy |
+| `socks5://host:port` | SOCKS5, target hostname resolved locally |
+| `socks5h://host:port` (or `socks://`) | SOCKS5, target hostname resolved by the proxy |
+
+Credentials are supported in every scheme: `socks5h://user:pass@127.0.0.1:1080` (URL-encode special characters, e.g. `@` → `%40`).
+
+The proxy is picked in this order (first non-empty wins):
+
+1. `ANTIGRAVITY_PROXY` environment variable;
+2. **Settings > Antigravity > Network Proxy** (saved to `antigravity-settings.json`, applied immediately);
+3. `HTTPS_PROXY` / `HTTP_PROXY` / `ALL_PROXY` (upper or lower case), honouring `NO_PROXY`.
+
+Use the value `direct` at levels 1 or 2 to force a direct connection even when system proxy variables are set.
+
+```sh
+ANTIGRAVITY_PROXY=socks5h://127.0.0.1:1080 dsh web
+```
+
+---
+
 ## 📋 Model Catalog
 
 | Model ID | Display Name | Provider | Features | Default |
