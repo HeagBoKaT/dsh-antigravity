@@ -25,7 +25,7 @@ Compared to upstream [`WiseXin/dsh-antigravity@6e04394`](https://github.com/Wise
 - **Russian UI and a language switcher**: the settings page is available in English, Russian and Chinese. A 🌐 selector in the page header picks Auto / English / Русский / 简体中文 (stored per browser). Auto follows the DSH language, and since DSH has no Russian UI, a Russian system language switches the plugin to Russian. Quota groups, bucket names, descriptions and reset countdowns are now localized too (upstream always showed them in Chinese).
 - **New "Network Proxy" card** in **Settings > Antigravity**, backed by a new `GET/POST /antigravity/api/proxy` endpoint. The value is stored in `antigravity-settings.json` and applied without restart.
 - **CLI login helper** (`antigravity-login`) also honours the saved proxy.
-- **Quota strip under the chat input** (v0.2.0): compact pills showing the remaining quota of each pool (Gemini / Claude & GPT) with a mini progress bar and a reset-time tooltip, refreshed automatically.
+- **5-hour quota in the composer stats row** (v0.2.0): next to the context meter under the chat input, shows the 5-hour limit left for the currently selected Antigravity model (mini bar + percent) and the time until reset; the tooltip lists all windows of its pool.
 - **Russian README** (this file's [Русский](./README.ru.md) version).
 
 ---
