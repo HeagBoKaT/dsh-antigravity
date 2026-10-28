@@ -30,7 +30,8 @@
 - **全新现代化 UI 交互**：
   - 完美融入 DSH 原生主题系统，支持深色（Dark Mode）与浅色模式无缝自适应；
   - 翡翠绿（Gemini）与科技紫青（Claude/GPT）双池独立实时额度看板；
-  - 新增「全部 / Gemini / Claude & GPT / 已启用」分类过滤 Tabs。
+  - 新增「全部 / Gemini / Claude & GPT / 已启用」分类过滤 Tabs；
+  - 聊天输入框下方新增紧凑额度条（v0.2.0），实时显示各额度池剩余比例与重置时间。
 - **纯净旗舰模型库**：剔除所有内部调试、测试及过旧的模型变体，聚焦精选 5 大主流旗舰模型。
 - **双模块标识无缝兼容**：同时注册 `dsh-antigravity` 与 `@wisexin/dsh-antigravity`，无论在 DSH 插件市场一键安装、GitHub 安装还是离线安装，均能 100% 顺滑激活，杜绝加载失败。
 
@@ -49,7 +50,7 @@ dsh plugin --profile web add github:WiseXin/dsh-antigravity
 ### 方式三：通过本地 Release 包安装
 ```sh
 npm run pack:dist
-dsh plugin --profile web add ./dist/wisexin-dsh-antigravity-0.1.12.tgz
+dsh plugin --profile web add ./dist/wisexin-dsh-antigravity-0.2.0.tgz
 ```
 
 ### 方式四：手动复制部署
